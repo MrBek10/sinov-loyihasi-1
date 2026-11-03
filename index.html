@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Mening Inspektorim - Mahalla Huquq-Tartibot Veb-Platformasi</title>
+    <meta name="description" content="Fuqarolar va mahalla profilaktika inspektorlari o'rtasida to'g'ridan-to'g'ri mustaqil veb aloqa platformasi." />
+    <meta property="og:title" content="Mening Inspektorim - Mahalla Huquq-Tartibot Veb-Platformasi" />
+    <meta property="og:description" content="Fuqarolar va mahalla profilaktika inspektorlari o'rtasida to'g'ridan-to'g'ri mustaqil veb aloqa platformasi." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-sky-500 selection:text-white min-h-screen">
+    <div id="root"></div>
+
+    <!-- Camera Modal Container (Perfectly Centered & iOS Viewport-Fit Optimized) -->
+    <div id="cameraModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div class="relative w-full max-w-md w-[92%] sm:w-full bg-slate-900/95 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 p-4 sm:p-5 space-y-4 my-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span id="recBadge" class="hidden px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold animate-pulse">RECORDING</span>
+            <span class="text-xs font-bold text-sky-400">Kamera Vizualizatori</span>
+          </div>
+          <button id="closeCameraBtn" class="p-2 text-slate-400 hover:text-white rounded-xl bg-white/10 transition-colors">✕</button>
+        </div>
+
+        <div class="relative w-full h-72 sm:h-80 bg-black rounded-2xl overflow-hidden flex items-center justify-center shadow-inner">
+          <video id="liveVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+          <canvas id="photoCanvas" class="hidden"></canvas>
+        </div>
+
+        <div class="flex items-center justify-around pt-2">
+          <button id="flipBtn" class="p-3.5 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs transition-transform active:scale-95" title="Kamerani almashtirish">🔄</button>
+          <button id="photoBtn" class="w-16 h-16 bg-white hover:bg-slate-100 text-slate-900 rounded-full font-bold shadow-lg flex items-center justify-center text-xl transition-transform active:scale-95" title="Suratga olish">📸</button>
+          <button id="videoBtn" class="w-16 h-16 bg-rose-600 hover:bg-rose-700 text-white rounded-full font-bold shadow-lg flex items-center justify-center text-xl transition-transform active:scale-95" title="Video yozish (Bosib turing)">🎥</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Modal Container (Perfectly Centered & Responsive) -->
+    <div id="previewModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div class="relative w-full max-w-md w-[92%] sm:w-full bg-slate-900/95 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 p-4 sm:p-5 space-y-4 my-auto">
+        <h3 class="text-sm font-bold text-white text-center">Media Oldindan Ko'rish</h3>
+        <div id="previewBox" class="w-full h-72 sm:h-80 bg-black rounded-2xl overflow-hidden flex items-center justify-center shadow-inner"></div>
+        <div class="flex items-center gap-3 pt-2">
+          <button id="retakeBtn" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-colors">Qayta olish</button>
+          <button id="sendBtn" class="flex-1 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow transition-all active:scale-95">Yuborish</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/camera.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

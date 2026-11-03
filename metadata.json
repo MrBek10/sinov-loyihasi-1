@@ -1,0 +1,9 @@
+{
+  "name": "Mening Inspektorim - Mahalla TMA",
+  "description": "Fuqarolar va mahalla profilaktika inspektorlari o'rtasida to'g'ridan-to'g'ri mustaqil veb aloqa platformasi.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

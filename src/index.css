@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --accent-color: #0284c7;
+  --accent-hover: #0369a1;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --base-font-size: 16px;
+}
+
+html {
+  font-size: var(--base-font-size, 16px);
+  font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+}
+
+body {
+  font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+}
+
+/* High Contrast (Night Patrol) Theme */
+.high-contrast {
+  background-color: #030712 !important;
+  color: #f8fafc !important;
+}
+
+.high-contrast header,
+.high-contrast nav,
+.high-contrast main,
+.high-contrast footer {
+  background-color: #030712 !important;
+}
+
+.high-contrast .bg-white,
+.high-contrast .bg-slate-900,
+.high-contrast .bg-slate-800 {
+  background-color: #0b1329 !important;
+  border-color: #38bdf8 !important;
+}
+
+.high-contrast .border-slate-200,
+.high-contrast .border-slate-800,
+.high-contrast .border-slate-700 {
+  border-color: #38bdf8 !important;
+}
+
+/* Telegram Mini App custom scrollbar and styles */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

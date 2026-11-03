@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mening Inspektorim - Mahalla Huquq-Tartibot Veb-Platformasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent-color: #0284c7;
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      --base-font-size: 16px;
+    }
+    html {
+      font-size: var(--base-font-size, 16px);
+      font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+    }
+    body {
+      font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+    }
+    .dark {
+      background-color: #020617 !important;
+      color: #f8fafc !important;
+    }
+    .dark .bg-white {
+      background-color: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    .dark .bg-slate-50 {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+    .dark .text-slate-900 {
+      color: #f8fafc !important;
+    }
+    .dark .text-slate-800 {
+      color: #e2e8f0 !important;
+    }
+    .dark .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    .dark .border-slate-200 {
+      border-color: #1e293b !important;
+    }
+    .dark .border-slate-100 {
+      border-color: #1e293b !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased min-h-screen flex flex-col transition-colors selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 shadow-2xs">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-sky-900 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+          🛡️
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold text-slate-900 leading-tight">Mening Inspektorim</h1>
+            <span id="role-badge" class="text-[10px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-100">
+              Fuqarolar Portali
+            </span>
+          </div>
+          <!-- Current Mahalla Display -->
+          <div id="header-mahalla-chip" class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+            <span>📍</span>
+            <span id="header-mahalla-name" class="font-medium text-slate-700">Bog'ishamol mahallasi</span>
+            <button onclick="startLocationWizard()" class="text-sky-600 font-semibold hover:underline ml-1">[O'zgartirish]</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2">
+        <!-- Staff Login Button (Only visible for citizens) -->
+        <button id="btn-open-staff-login" onclick="openStaffLoginModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-200">
+          <span>🔒 Xodimlar uchun</span>
+        </button>
+
+        <!-- Officer Logout Button (Only visible when staff logged in) -->
+        <button id="btn-staff-logout" onclick="logoutStaff()" class="hidden px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-rose-200">
+          <span>Chiqish ➔</span>
+        </button>
+
+        <!-- Dark/Light Theme Quick Button -->
+        <button onclick="toggleQuickTheme()" class="w-8 h-8 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors" title="Mavzuni almashtirish">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col justify-center">
+
+    <!-- ================================================================ -->
+    <!-- SCREEN 1: MULTI-STEP LOCATION WIZARD (Step Replacement)          -->
+    <!-- ================================================================ -->
+    <section id="screen-location" class="hidden max-w-md w-full mx-auto bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <button id="wizard-back-btn" onclick="wizardGoBack()" class="hidden w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+            ←
+          </button>
+          <div>
+            <h2 id="wizard-title" class="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+              1-qadam: Viloyatni tanlang
+            </h2>
+            <p id="wizard-subtitle" class="text-[11px] text-slate-500">
+              Yashash hududingiz bo'yicha birinchi bosqich
+            </p>
+          </div>
+        </div>
+        <div id="wizard-step-chip" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-100 text-sky-800">
+          1 / 3
+        </div>
+      </div>
+
+      <!-- Dynamic Step Content (Replaces step-by-step) -->
+      <div id="wizard-step-container" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+        <div class="text-center py-6 text-slate-400 text-xs">Hududlar yuklanmoqda...</div>
+      </div>
+
+      <!-- Minimal Ortga Button -->
+      <div id="wizard-bottom-back" class="hidden pt-2 border-t border-slate-100">
+        <button onclick="wizardGoBack()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1">
+          ← Ortga
+        </button>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SCREEN 2: CITIZEN MAIN SCREEN (MINIMALIST & FOCUSED)             -->
+    <!-- ONLY: Inspector Profile Card (Header) + 3 Core Actions           -->
+    <!-- ================================================================ -->
+    <section id="screen-citizen" class="hidden max-w-md w-full mx-auto space-y-4">
+      <!-- 1. Inspector Profile Card (Header with Gear Icon) -->
+      <div class="relative bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white rounded-3xl p-5 shadow-lg border border-sky-500/20">
+        <!-- Settings Icon (Gear) in top-right corner -->
+        <button onclick="openSettingsModal()" class="absolute top-4 right-4 w-9 h-9 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-200 flex items-center justify-center transition-all backdrop-blur-md active:scale-95 text-lg" title="Akkaunt Sozlamalari">
+          ⚙️
+        </button>
+
+        <div class="flex items-center gap-3.5 pr-10">
+          <!-- Inspector Photo/Avatar Placeholder -->
+          <div class="relative shrink-0">
+            <div id="card-avatar-box" class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-slate-800 border-2 border-sky-400/50 shadow-md flex items-center justify-center text-3xl overflow-hidden">
+              👮‍♂️
+            </div>
+          </div>
+
+          <!-- Full Name, Rank, Mahalla -->
+          <div class="min-w-0">
+            <div class="text-[10px] font-mono tracking-wider uppercase text-sky-400 font-semibold">
+              Profilaktika Inspektori
+            </div>
+            <h2 id="card-officer-name" class="text-base sm:text-lg font-bold text-white leading-tight mt-0.5">
+              Mayor Karimov Rustam Baxtiyorovich
+            </h2>
+            <div id="card-officer-rank" class="text-xs text-sky-200 font-medium mt-0.5">
+              Profilaktika katta inspektori
+            </div>
+            <div id="card-mahalla-name" class="text-xs text-slate-300 font-medium mt-1 truncate">
+              📍 Bog'ishamol mahallasi
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+          <span id="card-badge" class="font-mono text-sky-300 bg-white/5 px-2 py-0.5 rounded-lg border border-white/10">
+            IIB-UZ-7842
+          </span>
+          <span id="card-reception" class="text-slate-400">
+            Dush, Chor, Shanba (09:00-18:00)
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Confirmation Toast -->
+      <div id="action-success-banner" class="hidden p-3.5 bg-emerald-600 text-white rounded-2xl shadow-md text-xs font-bold text-center animate-in zoom-in-95">
+        Xabar profilaktika inspektoriga muvaffaqiyatli yetkazildi!
+      </div>
+
+      <!-- 2. ONLY 3 CORE ACTION BUTTONS -->
+      <div id="citizen-main-actions" class="space-y-3 pt-1">
+        <!-- Action 1: Call Officer (Qo'ng'iroq qilish) -->
+        <a id="btn-call-officer" href="tel:+998901234567" class="w-full py-4 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-sm sm:text-base flex items-center justify-between shadow-md transition-all">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 text-xl">
+              📞
+            </div>
+            <div class="text-left">
+              <div>Qo'ng'iroq qilish</div>
+              <div id="action-phone-sub" class="text-xs text-emerald-100 font-normal mt-0.5">
+                Xizmat telefoni: +998901234567
+              </div>
+            </div>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 rounded-xl">
+            Aloqa ➔
+          </span>
+        </a>
+
+        <!-- Action 2: Voice Message (Ovozli xabar) -->
+        <button type="button" onclick="openVoiceRecorder()" class="w-full py-4 px-5 rounded-2xl bg-sky-700 hover:bg-sky-800 active:scale-[0.98] text-white font-bold text-sm sm:text-base flex items-center justify-between shadow-md transition-all">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 text-xl">
+              🎙
+            </div>
+            <div class="text-left">
+              <div>Ovozli xabar</div>
+              <div class="text-xs text-sky-100 font-normal mt-0.5">
+                Mikrofon orqali tezkor audio qoldirish
+              </div>
+            </div>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 rounded-xl">
+            Yozish ➔
+          </span>
+        </button>
+
+        <!-- Action 3: Video Message (Video xabar) -->
+        <button type="button" onclick="openVideoRecorder()" class="w-full py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-sm sm:text-base flex items-center justify-between shadow-md transition-all">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 text-xl">
+              🎥
+            </div>
+            <div class="text-left">
+              <div>Video xabar</div>
+              <div class="text-xs text-slate-300 font-normal mt-0.5">
+                Kameradan qisqa video yuborish
+              </div>
+            </div>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 rounded-xl">
+            Yuborish ➔
+          </span>
+        </button>
+      </div>
+
+      <!-- INLINE VOICE RECORDER VIEW -->
+      <div id="voice-recorder-view" class="hidden bg-white rounded-3xl p-5 border border-slate-200 shadow-lg space-y-4 animate-in zoom-in-95">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="font-bold text-sm text-slate-900">🎙 Ovozli xabar yozish</h3>
+          <button onclick="closeVoiceRecorder()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        </div>
+
+        <div class="text-center py-4 space-y-3">
+          <div id="voice-timer" class="font-mono text-3xl font-extrabold text-slate-900">00:00</div>
+          <p id="voice-status-text" class="text-xs text-slate-500">Mikrofon tugmasini bosing va muammoni gapiring</p>
+
+          <div class="flex items-center justify-center pt-2">
+            <button id="btn-mic-start" onclick="startMicRecording()" class="w-20 h-20 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-90 text-white flex items-center justify-center shadow-xl text-3xl">
+              🎙
+            </button>
+            <button id="btn-mic-stop" onclick="stopMicRecording()" class="hidden w-20 h-20 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-xl text-2xl animate-pulse">
+              ■
+            </button>
+          </div>
+        </div>
+
+        <div id="voice-playback-box" class="hidden space-y-3 pt-2 border-t border-slate-100">
+          <audio id="voice-player" controls class="w-full h-8"></audio>
+          <div class="flex items-center gap-2">
+            <button onclick="discardVoiceRecording()" class="px-4 py-2 text-rose-600 hover:bg-rose-50 text-xs font-semibold rounded-xl">
+              Bekor qilish
+            </button>
+            <button onclick="sendVoiceMessageAction()" class="flex-1 py-3 bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs rounded-xl shadow-md">
+              Inspektorga yuborish ➔
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INLINE VIDEO CAPTURE VIEW -->
+      <div id="video-recorder-view" class="hidden bg-white rounded-3xl p-5 border border-slate-200 shadow-lg space-y-4 animate-in zoom-in-95">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="font-bold text-sm text-slate-900">🎥 Video xabar yuborish</h3>
+          <button onclick="closeVideoRecorder()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        </div>
+
+        <input type="file" id="video-input" accept="video/*" capture="environment" onchange="handleVideoFile(event)" class="hidden">
+
+        <div id="video-picker-prompt" class="text-center py-6 space-y-3">
+          <button onclick="document.getElementById('video-input').click()" class="w-20 h-20 rounded-full bg-sky-600 hover:bg-sky-700 active:scale-90 text-white flex items-center justify-center shadow-xl mx-auto text-3xl">
+            📷
+          </button>
+          <div class="text-xs font-bold text-slate-800">Kamerani ochish yoki video tanlash</div>
+          <div class="text-[10px] text-slate-500">Hodisa joyidan qisqa video yozib yuboring</div>
+        </div>
+
+        <div id="video-preview-box" class="hidden space-y-3">
+          <video id="video-player" controls class="w-full h-44 rounded-2xl bg-black object-cover"></video>
+          <div class="flex items-center justify-between gap-2">
+            <button onclick="document.getElementById('video-input').click()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold">
+              Qayta olish
+            </button>
+            <button onclick="sendVideoMessageAction()" class="flex-1 py-3 bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs rounded-xl shadow-md">
+              Videoni yuborish ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SCREEN 3: PROTECTED OFFICER DASHBOARD (STANDALONE WEB VIEW)      -->
+    <!-- Accessible ONLY when officer is authenticated                    -->
+    <!-- ================================================================ -->
+    <section id="screen-officer" class="hidden w-full space-y-4">
+      <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white rounded-3xl p-5 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] bg-sky-500/20 text-sky-300 font-mono px-2 py-0.5 rounded border border-sky-400/30">
+              PROFILAKTIKA INSPEKTORI KABINETI
+            </span>
+            <h2 id="officer-name" class="text-base font-bold text-white mt-1">Mayor Karimov R. B.</h2>
+            <div id="officer-mahalla" class="text-xs text-slate-300">Bog'ishamol mahallasi</div>
+          </div>
+          <button onclick="loadOfficerReports()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-xl font-semibold">
+            🔄 Yangilash
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-xs text-slate-700">Kelib tushgan murojaatlar:</span>
+        <div class="flex items-center gap-1 text-xs">
+          <button onclick="filterOfficerReports('all')" id="filter-all" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold">Hammasi</button>
+          <button onclick="filterOfficerReports('new')" id="filter-new" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">Yangi</button>
+          <button onclick="filterOfficerReports('resolved')" id="filter-resolved" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">Hal qilingan</button>
+        </div>
+      </div>
+
+      <div id="officer-reports-container" class="space-y-3">
+        <div class="text-center text-slate-400 py-6 text-xs">Murojaatlar yuklanmoqda...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================================================================ -->
+  <!-- MODAL A: STAFF LOGIN MODAL (XODIMLAR UCHUN)                      -->
+  <!-- ================================================================ -->
+  <div id="staff-login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in">
+    <div class="bg-white rounded-3xl max-w-sm w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Xodimlar Uchun</h3>
+          <p class="text-xs text-slate-500">Profilaktika inspektori kabinetiga kirish</p>
+        </div>
+        <button onclick="closeStaffLoginModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <form id="staff-login-form" onsubmit="handleStaffLogin(event)" class="p-5 space-y-4 text-xs">
+        <div id="login-error-msg" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-medium"></div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Login yoki Telefon raqam</label>
+          <input type="text" id="login-username" value="karimov" required placeholder="Masalan: karimov"
+                 class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Parol</label>
+          <input type="password" id="login-password" value="pass123" required placeholder="••••••••"
+                 class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500">
+        </div>
+
+        <div class="p-2.5 bg-slate-50 rounded-xl text-[11px] text-slate-600 space-y-0.5">
+          <span class="font-semibold block text-slate-700">Sinov hisobi:</span>
+          <div>Login: <b>karimov</b> · Parol: <b>pass123</b></div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-sky-700 hover:bg-sky-800 text-white font-bold rounded-xl shadow-md transition-all active:scale-95">
+          Tizimga kirish ➔
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- MODAL B: ACCOUNT SETTINGS MODAL (AKKAUNT SOZLAMALARI)            -->
+  <!-- ================================================================ -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in">
+    <div class="bg-white rounded-3xl max-w-sm w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Akkaunt Sozlamalari</h3>
+          <p class="text-[11px] text-slate-500">Mavzu, shrift va urg'u rangi</p>
+        </div>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <div class="p-4 space-y-4 overflow-y-auto text-xs">
+        <!-- 1. Theme: Light / Dark -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Mavzu (Theme):</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="applyThemeSetting('light')" id="theme-btn-light" class="p-2.5 border rounded-xl font-bold text-center border-sky-600 bg-sky-50 text-sky-800">
+              ☀️ Yorug' (Light)
+            </button>
+            <button onclick="applyThemeSetting('dark')" id="theme-btn-dark" class="p-2.5 border rounded-xl font-semibold text-center border-slate-200 hover:bg-slate-50">
+              🌙 Qorong'i (Dark)
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Font Family: Inter, Sans-serif, Serif -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Shrift turi (Font Family):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="applyFontSetting('inter')" id="font-btn-inter" class="p-2 border rounded-xl text-center font-bold border-sky-600 bg-sky-50 text-sky-800">
+              Inter
+            </button>
+            <button onclick="applyFontSetting('sans')" id="font-btn-sans" class="p-2 border rounded-xl text-center border-slate-200 hover:bg-slate-50">
+              Sans-serif
+            </button>
+            <button onclick="applyFontSetting('serif')" id="font-btn-serif" class="p-2 border rounded-xl text-center border-slate-200 hover:bg-slate-50 font-serif">
+              Serif
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Font Size: Kichik, O'rtacha, Katta -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Matn o'lchami (Font Size):</label>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <button onclick="applySizeSetting('small')" id="size-btn-small" class="p-2 border rounded-xl border-slate-200 hover:bg-slate-50">
+              Kichik (14px)
+            </button>
+            <button onclick="applySizeSetting('medium')" id="size-btn-medium" class="p-2 border rounded-xl border-sky-600 bg-sky-50 text-sky-800 font-bold">
+              O'rtacha (16px)
+            </button>
+            <button onclick="applySizeSetting('large')" id="size-btn-large" class="p-2 border rounded-xl border-slate-200 hover:bg-slate-50">
+              Katta (18px)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Theme Accent Color: Police Blue, Emerald, Slate -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Urg'u rangi (Accent Color):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="applyAccentSetting('blue')" id="acc-btn-blue" class="p-2 border rounded-xl flex items-center justify-center gap-1.5 border-slate-800 bg-slate-100 font-bold">
+              <span class="w-3 h-3 rounded-full bg-sky-600"></span>
+              <span>Police Blue</span>
+            </button>
+            <button onclick="applyAccentSetting('emerald')" id="acc-btn-emerald" class="p-2 border rounded-xl flex items-center justify-center gap-1.5 border-slate-200 hover:bg-slate-50">
+              <span class="w-3 h-3 rounded-full bg-emerald-600"></span>
+              <span>Emerald</span>
+            </button>
+            <button onclick="applyAccentSetting('slate')" id="acc-btn-slate" class="p-2 border rounded-xl flex items-center justify-center gap-1.5 border-slate-200 hover:bg-slate-50">
+              <span class="w-3 h-3 rounded-full bg-slate-600"></span>
+              <span>Slate</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+          <span class="text-slate-500">Hududni qayta tanlash:</span>
+          <button onclick="closeSettingsModal(); startLocationWizard();" class="text-sky-700 font-semibold hover:underline">
+            Mahallani o'zgartirish ➔
+          </button>
+        </div>
+      </div>
+
+      <div class="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-end">
+        <button onclick="closeSettingsModal()" class="px-5 py-2 bg-sky-700 text-white font-bold text-xs rounded-xl shadow-xs">
+          Saqlash va Yopish
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
